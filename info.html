@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>shoutul masteja info</title>
+    
+    <!-- OneSignal Web SDK -->
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function(OneSignal) {
+        await OneSignal.init({
+          appId: "e83fefef-4985-4063-a3ad-466901568c36",
+          serviceWorkerParam: { scope: "/" },
+          serviceWorkerPath: "OneSignalSDKWorker.js"
+        });
+      });
+    </script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #000; font-family: sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
+        header { background: #1a1a1a; padding: 12px; display: flex; align-items: center; gap: 15px; border-bottom: 2px solid #FFD700; position: sticky; top: 0; z-index: 10; }
+        .group-icon { width: 35px; height: 35px; background: #FFD700; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #000; }
+        #chat-box { flex: 1; padding: 15px; padding-bottom: 20px; display: flex; flex-direction: column; gap: 12px; background: #000; }
+        .msg { padding: 10px 14px; border-radius: 15px; max-width: 85%; font-size: 14px; line-height: 1.5; white-space: pre-wrap; word-wrap: break-word; }
+        .mine { align-self: flex-end; background: #FFD700; color: #000; border-bottom-right-radius: 2px; }
+        .others { align-self: flex-start; background: #1a1a1a; color: #FFD700; border: 1px solid #FFD700; border-bottom-left-radius: 2px; }
+        .bottom-controls { background: #1a1a1a; padding: 12px 12px 35px 12px; display: flex; align-items: flex-end; gap: 8px; border-top: 1px solid #333; position: sticky; bottom: 0; z-index: 10; }
+        .btn-tool { background: #222; color: #FFD700; border: 1px solid #FFD700; width: 42px; height: 42px; border-radius: 50%; font-size: 16px; cursor: pointer; display: flex; justify-content: center; align-items: center; flex-shrink: 0; }
+        #chat-form { flex: 1; display: flex; gap: 8px; }
+        #input-msg { flex: 1; background: #222; border: 1px solid #FFD700; color: #fff; padding: 10px 15px; border-radius: 20px; outline: none; height: 42px; resize: none; font-size: 14px; }
+        .btn-send { background: #FFD700; color: #000; border: none; width: 42px; height: 42px; border-radius: 50%; display: flex; justify-content: center; align-items: center; flex-shrink: 0; }
+        #login-screen { position: fixed; inset: 0; background: #000; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; padding: 20px; }
+        .peci-anim { font-size: 50px; color: #FFD700; margin-bottom: 15px; animation: bounce 2s infinite; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .login-box { width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 12px; }
+        .input-wa { background: #1a1a1a; border: 1px solid #FFD700; color: #fff; padding: 12px 15px; border-radius: 20px; outline: none; font-size: 14px; width: 100%; }
+        .btn-wa-login { background: #25D366; color: #fff; border: none; padding: 12px 20px; border-radius: 25px; font-weight: bold; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div id="login-screen">
+        <div class="peci-anim"><i class="fas fa-user-tie"></i></div>
+        <div class="login-box">
+            <input type="text" id="wa-name" class="input-wa" placeholder="Ngaran maneh(Nama)" required>
+            <input type="tel" id="wa-number" class="input-wa" placeholder="Nomor WA (Contoh: 08123456789)" required>
+            <button class="btn-wa-login" onclick="mulaiLoginWA()">
+                <i class="fab fa-whatsapp" style="font-size: 18px;"></i> ASUP MAKE WHATSAPP
+            </button>
+        </div>
+        <h6 style="margin-top: 20px; color: #666; padding: 0 20px; text-align: center;">Isi nama jeung nomor WhatsApp jang bisa ngirim info</h6>
+    </div>
+
+    <header>
+        <div class="group-icon"><i class="fas fa-crown"></i></div>
+        <div class="group-info">
+            <h4 style="color: #FFD700; font-size: 15px;">shoutul masteja info</h4>
+            <p style="font-size:9px; color:#888;">pencet rada hebel jang hapus pesan</p>
+        </div>
+    </header>
+
+    <div id="chat-box"></div>
+
+    <div class="bottom-controls">
+        <button type="button" class="btn-tool" onclick="pakaiTemplate()" title="Nyieun Pengumuman">
+            <i class="fas fa-bullhorn"></i>
+        </button>
+        <form id="chat-form">
+            <textarea id="input-msg" placeholder="Tulis pesan..."></textarea>
+            <button type="submit" class="btn-send"><i class="fas fa-paper-plane"></i></button>
+        </form>
+    </div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, deleteDoc, doc, query, orderBy, limit, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = { 
+      apiKey : "AIzaSyCtx2nxthZPvrOhItetKKNzCWAr0gyTMtU", 
+      authDomain : "shoutulmasteja.firebaseapp.com", 
+      projectId : "shoutulmasteja", 
+      storageBucket : "shoutulmasteja.firebasestorage.app", 
+      messagingSenderId : "153000633436", 
+      appId : "1:153000633436:web:2a4a469bc647fb0679f299", 
+      measurementId : "G-8TWMTF4H3E" 
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+    let isInitialLoad = true;
+
+    function mintaIzinNotifikasi() {
+        if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
+            Notification.requestPermission();
+        }
+    }
+
+    function tampilkanNotifikasiLokal(pengirim, teks) {
+        if ("Notification" in window && Notification.permission === "granted") {
+            new Notification(`Pesan baru dari ${pengirim}`, {
+                body: teks,
+                icon: 'https://cdn-icons-png.flaticon.com/512/134/134937.png'
+            });
+        }
+    }
+
+    window.mulaiLoginWA = () => {
+        const nameInput = document.getElementById('wa-name').value.trim();
+        const numberInput = document.getElementById('wa-number').value.trim();
+        if (!nameInput || !numberInput) { alert("Eusian nama jeung nomor WA heula!"); return; }
+
+        let formattedNumber = numberInput.replace(/[^0-9]/g, '');
+        if (formattedNumber.startsWith('0')) { formattedNumber = '62' + formattedNumber.slice(1); }
+
+        currentUser = { uid: 'wa_' + formattedNumber, displayName: nameInput, phoneNumber: formattedNumber };
+        localStorage.setItem('sm_user', JSON.stringify(currentUser));
+        
+        if (window.OneSignalDeferred) {
+            window.OneSignalDeferred.push(async function(OneSignal) {
+                await OneSignal.login(currentUser.uid);
+            });
+        }
+
+        mintaIzinNotifikasi();
+        document.getElementById('login-screen').style.display = 'none';
+        muatPesan();
+    };
+
+    function checkAuth() {
+        const savedUser = localStorage.getItem('sm_user');
+        if (savedUser) {
+            currentUser = JSON.parse(savedUser);
+            if (window.OneSignalDeferred) {
+                window.OneSignalDeferred.push(async function(OneSignal) {
+                    await OneSignal.login(currentUser.uid);
+                });
+            }
+            mintaIzinNotifikasi();
+            document.getElementById('login-screen').style.display = 'none';
+            muatPesan();
+        } else {
+            document.getElementById('login-screen').style.display = 'flex';
+        }
+    }
+
+    window.pakaiTemplate = () => {
+        const input = document.getElementById('input-msg');
+        input.value = "📣 *PENGUMUMAN SHOUTUL MASTEJA*\n\n🇲🇨 Alamat: \n💼 Job: \n📍 Tempat: \n⏰ Waktu: \n\nhayu urang gembrung!";
+        input.style.height = "140px"; 
+        input.focus();
+    };
+
+    document.getElementById('chat-form').onsubmit = async (e) => {
+        e.preventDefault();
+        const input = document.getElementById('input-msg');
+        const teks = input.value.trim();
+        if (!teks || !currentUser) return;
+        
+        try {
+            await addDoc(collection(db, "messages"), {
+                text: teks,
+                uid: currentUser.uid,
+                name: currentUser.displayName,
+                time: serverTimestamp()
+            });
+
+            input.value = "";
+            input.style.height = "42px";
+        } catch (err) { alert(err.message); }
+    };
+
+    function muatPesan() {
+        if (!currentUser) return;
+        const q = query(collection(db, "messages"), orderBy("time", "asc"), limit(50));
+        
+        onSnapshot(q, (snapshot) => {
+            const box = document.getElementById('chat-box');
+            
+            snapshot.docChanges().forEach((change) => {
+                if (change.type === "added") {
+                    const dataPesan = change.doc.data();
+                    
+                    if (!isInitialLoad && dataPesan.uid !== currentUser.uid) {
+                        tampilkanNotifikasiLokal(dataPesan.name, dataPesan.text);
+                    }
+                }
+            });
+
+            box.innerHTML = "";
+            snapshot.forEach((docSnap) => {
+                const d = docSnap.data();
+                const isMine = d.uid === currentUser.uid;
+                const div = document.createElement('div');
+                div.className = `msg ${isMine ? 'mine' : 'others'}`;
+                div.innerHTML = `<span style="font-size:10px; font-weight:bold; display:block; margin-bottom:4px; color:${isMine?'#000':'#FFD700'}">${d.name}</span>${d.text}`;
+                
+                let timer;
+                div.ontouchstart = () => {
+                    timer = setTimeout(() => {
+                        if (confirm("Hapus chat ieu?")) {
+                            deleteDoc(doc(db, "messages", docSnap.id));
+                        }
+                    }, 800);
+                };
+                div.ontouchend = () => clearTimeout(timer);
+
+                box.appendChild(div);
+            });
+
+            isInitialLoad = false;
+            window.scrollTo(0, document.body.scrollHeight);
+        });
+    }
+
+    checkAuth();
+</script>
+
+</body>
+</html>
