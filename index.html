@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>official shoutul masteja</title>
+    <title>Official Shoutul Masteja</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Pengaturan Dasar */
@@ -20,7 +20,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh; /* Menggunakan min-height agar aman saat konten bertambah */
+            min-height: 100vh;
             overflow-x: hidden;
         }
 
@@ -53,9 +53,10 @@
         /* Grouping Icon */
         .menu-wrapper {
             display: flex;
-            gap: 30px; /* Jarak antar kartu disesuaikan */
+            gap: 30px;
             justify-content: center;
             flex-wrap: wrap;
+            margin-bottom: 30px;
         }
 
         /* Desain Kartu Menu */
@@ -65,7 +66,7 @@
             background: #1e1e1e;
             padding: 30px;
             border-radius: 15px;
-            width: 180px; /* Sedikit dikecilkan agar muat 3 kartu dengan rapi */
+            width: 180px;
             transition: all 0.3s ease;
             border: 1px solid #333;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
@@ -82,7 +83,7 @@
         }
 
         .menu-card i {
-            font-size: 3.5rem; /* Ukuran disesuaikan sedikit */
+            font-size: 3.5rem;
             margin-bottom: 15px;
         }
 
@@ -93,10 +94,70 @@
             text-align: center;
         }
 
+        /* Area Pengumuman & Tombol-tombol */
+        .dev-section {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .dev-notice {
+            font-size: 0.9rem;
+            color: #bfa100; 
+            letter-spacing: 1px;
+        }
+
+        /* Container Tombol agar sejajar rapi */
+        .button-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* Desain Tombol Umum */
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background-color: #1e1e1e;
+            color: #FFD700;
+            padding: 12px 25px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.95rem;
+            border: 1px solid #FFD700;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.1);
+        }
+
+        .btn-action:hover {
+            background-color: #FFD700;
+            color: #121212;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+        }
+
+        /* Desain Khusus Tombol WhatsApp (Warna Hijau Khas WA) */
+        .btn-whatsapp {
+            border-color: #25D366;
+            color: #25D366;
+        }
+
+        .btn-whatsapp:hover {
+            background-color: #25D366;
+            color: #ffffff;
+            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+        }
+
         /* Efek Responsif */
         @media (max-width: 650px) {
             .menu-wrapper {
                 gap: 15px;
+                margin-bottom: 20px;
             }
             .menu-card {
                 width: 140px;
@@ -108,13 +169,20 @@
             h1 {
                 font-size: 1.8rem;
             }
+            .dev-notice {
+                font-size: 0.8rem;
+            }
+            .btn-action {
+                padding: 10px 18px;
+                font-size: 0.85rem;
+            }
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <span class="badge">selamat datang</span>
+        <span class="badge">Selamat Datang</span>
         <h1>SHOUTUL MASTEJA</h1>
         
         <div class="menu-wrapper">
@@ -123,34 +191,53 @@
                 <p>Lirik Lagu</p>
             </a>
 
-
-
             <a href="Rumus tabuhan.html" class="menu-card">
                 <i class="fas fa-drum"></i>
                 <p>Rumus Tabuhan</p>
             </a>
-<a href="gallery.html" class="menu-card">
-    <i class="fas fa-images"></i>
-    <p>Gallery</p>
-</a>
-<a href="info.html" class="menu-card">
-    <i class="fas fa-info-circle"></i>
-    <p>Info & Chat</p>
-</a>
+            
+            <a href="gallery.html" class="menu-card">
+                <i class="fas fa-images"></i>
+                <p>Gallery</p>
+            </a>
+            
+            <a href="info.html" class="menu-card">
+                <i class="fas fa-info-circle"></i>
+                <p>Info & Chat</p>
+            </a>
+        </div>
 
+        <!-- Bagian Info & Tombol Tautan -->
+        <div class="dev-section">
+            <p class="dev-notice">
+                <i class="fas fa-tools"></i> Website ini masih dalam tahap pengembangan oleh developer, mohon dimaklumi.
+            </p>
+            
+            <div class="button-group">
+                <!-- Tombol Portofolio -->
+                <a href="https://raysprozex.github.io/Portopolio/" target="_blank" class="btn-action">
+                    <i class="fas fa-code"></i> Portofolio Developer
+                </a>
+
+                <!-- Tombol Kirim Masukan ke WhatsApp -->
+                <a href="https://wa.me/6283845795768?text=Halo%20Developer,%20saya%20ingin%20memberikan%20masukan%20untuk%20website%20Shoutul%20Masteja:%20" target="_blank" class="btn-action btn-whatsapp">
+                    <i class="fab fa-whatsapp"></i> Kirim Masukan
+                </a>
+            </div>
+        </div>
     </div>
 
 </body>
 <script>
     const firebaseConfig = {
-  apiKey: "AIzaSyBugJ590wIKNi3r1HHnyTyl4a1YJSSPhds",
-  authDomain: "shoutulmastejachat.firebaseapp.com",
-  databaseURL: "https://shoutulmastejachat-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "shoutulmastejachat",
-  storageBucket: "shoutulmastejachat.firebasestorage.app",
-  messagingSenderId: "40109384180",
-  appId: "1:40109384180:web:791ca0d9a012e3288699a1",
-  measurementId: "G-QGQLC2BJBZ"
-};
+        apiKey: "AIzaSyBugJ590wIKNi3r1HHnyTyl4a1YJSSPhds",
+        authDomain: "shoutulmastejachat.firebaseapp.com",
+        databaseURL: "https://shoutulmastejachat-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "shoutulmastejachat",
+        storageBucket: "shoutulmastejachat.firebasestorage.app",
+        messagingSenderId: "40109384180",
+        appId: "1:40109384180:web:791ca0d9a012e3288699a1",
+        measurementId: "G-QGQLC2BJBZ"
+    };
 </script>
 </html>

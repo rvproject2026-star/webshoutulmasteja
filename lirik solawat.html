@@ -7,6 +7,23 @@
     <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
 
     <style>
+        .btn-link {
+        display: inline-block;
+        margin-top: 15px;
+        padding: 10px 20px;
+        background-color: var(--primary);
+        color: #000;
+        text-decoration: none;
+        font-weight: bold;
+        border-radius: 5px;
+        transition: 0.3s;
+        box-shadow: 0 4px 10px rgba(255, 215, 0, 0.2);
+    }
+    .btn-link:hover {
+        background-color: #e6c200;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(255, 215, 0, 0.4);
+    }
         :root {
             --primary: #FFD700;
             --bg-dark: #0a0a0a;
@@ -219,15 +236,20 @@ const firebaseConfig = {
                 container.innerHTML = ""; // Bersihkan teks loading
 
                 // Looping data dari Firebase (karena bentuknya objek dengan key '1', '2', dst)
-                Object.keys(data).forEach((key, index) => {
+              Object.keys(data).forEach((key, index) => {
                     const item = data[key];
                     
-                    // Format teks arab (ganti newline \n jadi tag <br> agar enter-nya terbaca)
                     const formatArab = item.teks_arab ? item.teks_arab.replace(/\n/g, '<br>') : '';
                     const formatLatin = item.teks_latin ? item.teks_latin.replace(/\n/g, '<br>') : '';
                     const terjemahText = item.terjemah ? `<div class="terjemah">Artinya: ${item.terjemah}</div>` : '';
                     const latinContainer = item.teks_latin ? `<div class="teks-latin">${formatLatin}</div>` : '';
                     const badgeKategori = item.kategori ? `<span class="badge">${item.kategori}</span>` : '';
+
+                    // Cek jika ada link_url, buatkan tombol otomatis
+                    let tombolHtml = '';
+                    if (item.link_url) {
+                        tombolHtml = `<a href="${item.link_url}" target="_blank" class="btn-link">🔗 Buka Tautan Developer</a>`;
+                    }
 
                     // Buat elemen HTML untuk setiap lirik
                     const lirikDiv = document.createElement('div');
@@ -237,6 +259,7 @@ const firebaseConfig = {
                         <div class="teks-arab">${formatArab}</div>
                         ${latinContainer}
                         ${terjemahText}
+                        ${tombolHtml}
                     `;
                     container.appendChild(lirikDiv);
                 });
