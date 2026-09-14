@@ -141,7 +141,7 @@
             box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
         }
 
-        /* Desain Khusus Tombol WhatsApp (Warna Hijau Khas WA) */
+        /* Desain Khusus Tombol WhatsApp */
         .btn-whatsapp {
             border-color: #25D366;
             color: #25D366;
@@ -227,17 +227,39 @@
         </div>
     </div>
 
+    <!-- Firebase SDK (Modular v9/v10) untuk mencatat pengunjung -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBugJ590wIKNi3r1HHnyTyl4a1YJSSPhds",
+            authDomain: "shoutulmastejachat.firebaseapp.com",
+            databaseURL: "https://shoutulmastejachat-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "shoutulmastejachat",
+            storageBucket: "shoutulmastejachat.firebasestorage.app",
+            messagingSenderId: "40109384180",
+            appId: "1:40109384180:web:791ca0d9a012e3288699a1",
+            measurementId: "G-QGQLC2BJBZ"
+        };
+
+        // Inisialisasi Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Fungsi mencatat pengunjung saat halaman dibuka
+        window.addEventListener('DOMContentLoaded', () => {
+            const visitorRef = ref(db, 'visitors');
+            const newVisitorRef = push(visitorRef);
+            
+            set(newVisitorRef, {
+                waktu: new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }),
+                userAgent: navigator.userAgent,
+                platform: navigator.platform
+            }).catch((error) => {
+                console.error("Gagal mencatat pengunjung: ", error);
+            });
+        });
+    </script>
 </body>
-<script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyBugJ590wIKNi3r1HHnyTyl4a1YJSSPhds",
-        authDomain: "shoutulmastejachat.firebaseapp.com",
-        databaseURL: "https://shoutulmastejachat-default-rtdb.asia-southeast1.firebasedatabase.app",
-        projectId: "shoutulmastejachat",
-        storageBucket: "shoutulmastejachat.firebasestorage.app",
-        messagingSenderId: "40109384180",
-        appId: "1:40109384180:web:791ca0d9a012e3288699a1",
-        measurementId: "G-QGQLC2BJBZ"
-    };
-</script>
 </html>
