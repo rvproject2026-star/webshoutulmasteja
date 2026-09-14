@@ -8,6 +8,16 @@
     <!-- OneSignal Web SDK -->
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
     <script>
+        const firebaseConfig = {
+  apiKey: "AIzaSyBugJ590wIKNi3r1HHnyTyl4a1YJSSPhds",
+  authDomain: "shoutulmastejachat.firebaseapp.com",
+  databaseURL: "https://shoutulmastejachat-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "shoutulmastejachat",
+  storageBucket: "shoutulmastejachat.firebasestorage.app",
+  messagingSenderId: "40109384180",
+  appId: "1:40109384180:web:791ca0d9a012e3288699a1",
+  measurementId: "G-QGQLC2BJBZ"
+};
       window.OneSignalDeferred = window.OneSignalDeferred || [];
       OneSignalDeferred.push(async function(OneSignal) {
         await OneSignal.init({
