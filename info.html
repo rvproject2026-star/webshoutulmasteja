@@ -260,12 +260,12 @@
 </head>
 <body>
 
-    <!-- POPUP INPUT NAMA -->
+    <!-- POPUP INPUT NAMA (MUNCUL SAAT MAU MENGETIK PESAN) -->
     <div id="popup-screen">
         <div class="popup-box">
             <div class="popup-icon"><i class="fas fa-id-badge"></i></div>
             <h3 style="color: #111; font-size: 1.1rem;">Kenalan Dulu Yuk!</h3>
-            <p style="font-size: 0.8rem; color: var(--text-gray);">Masukkan nama panggilan atau namamu agar teman-teman tahu siapa yang mengirim informasi.</p>
+            <p style="font-size: 0.8rem; color: var(--text-gray);">Masukkan namamu terlebih dahulu sebelum mulai mengetik informasi.</p>
             <input type="text" id="user-name-input" class="input-name" placeholder="Tulis nama kamu di sini..." required>
             <button class="btn-save-name" onclick="simpanNamaUser()">SIMPAN & LANJUTKAN</button>
         </div>
@@ -310,7 +310,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    let currentUserName = null;
+    let currentUserName = localStorage.getItem('sm_username_simple') || null;
     let isInitialLoad = true;
 
     function mintaIzinNotifikasi() {
@@ -328,6 +328,16 @@
         }
     }
 
+    // Event listener saat kolom pesan mulai diklik/diketik (fokus)
+    const inputMsg = document.getElementById('input-msg');
+    inputMsg.addEventListener('focus', (e) => {
+        if (!currentUserName) {
+            e.preventDefault();
+            inputMsg.blur(); // Lepas fokus keyboard HP supaya tidak mengganggu popup
+            document.getElementById('popup-screen').style.display = 'flex';
+        }
+    });
+
     // Fungsi saat tombol simpan nama di popup ditekan
     window.simpanNamaUser = () => {
         const inputVal = document.getElementById('user-name-input').value.trim();
@@ -337,45 +347,36 @@
         }
 
         currentUserName = inputVal;
-        // Simpan ke localStorage agar tidak perlupopup terus menerus di HP yang sama
         localStorage.setItem('sm_username_simple', currentUserName);
 
         document.getElementById('popup-screen').style.display = 'none';
         mintaIzinNotifikasi();
-        muatPesan();
+        
+        // Kembalikan fokus ke kolom input pesan setelah nama disimpan
+        inputMsg.focus();
     };
-
-    function cekNamaUser() {
-        const savedName = localStorage.getItem('sm_username_simple');
-        if (savedName) {
-            currentUserName = savedName;
-            document.getElementById('popup-screen').style.display = 'none';
-            mintaIzinNotifikasi();
-            muatPesan();
-        } else {
-            // Tampilkan popup jika nama belum ada
-            document.getElementById('popup-screen').style.display = 'flex';
-        }
-    }
 
     window.pakaiTemplate = () => {
-        const input = document.getElementById('input-msg');
-        input.value = "📢 *PENGUMUMAN SHOUTUL MASTEJA*\n\n📍 Alamat: \n💼 Job: \n⏰ Tempat: \n⌛ Waktu: \n\nHayu urang gembrung!";
-        input.style.height = "140px"; 
-        input.focus();
-    };
-
-    document.getElementById('chat-form').onsubmit = async (e) => {
-        e.preventDefault();
-        
-        // Pastikan nama sudah diisi lewat popup sebelum kirim pesan
+        // Cek nama dulu sebelum pakai template
         if (!currentUserName) {
             document.getElementById('popup-screen').style.display = 'flex';
             return;
         }
 
-        const input = document.getElementById('input-msg');
-        const teks = input.value.trim();
+        inputMsg.value = "📢 *PENGUMUMAN SHOUTUL MASTEJA*\n\n📍 Alamat: \n💼 Job: \n⏰ Tempat: \n⌛ Waktu: \n\nHayu urang gembrung!";
+        inputMsg.style.height = "140px"; 
+        inputMsg.focus();
+    };
+
+    document.getElementById('chat-form').onsubmit = async (e) => {
+        e.preventDefault();
+        
+        if (!currentUserName) {
+            document.getElementById('popup-screen').style.display = 'flex';
+            return;
+        }
+
+        const teks = inputMsg.value.trim();
         if (!teks) return;
         
         try {
@@ -385,13 +386,14 @@
                 time: serverTimestamp()
             });
 
-            input.value = "";
-            input.style.height = "45px";
-        } catch (err) { alert(err.message); }
+            inputMsg.value = "";
+            inputMsg.style.height = "45px";
+        } catch (err) { 
+            alert(err.message); 
+        }
     };
 
     function muatPesan() {
-        if (!currentUserName) return;
         const q = query(collection(db, "messages"), orderBy("time", "asc"), limit(50));
         
         onSnapshot(q, (snapshot) => {
@@ -401,7 +403,7 @@
                 if (change.type === "added") {
                     const dataPesan = change.doc.data();
                     
-                    if (!isInitialLoad && dataPesan.name !== currentUserName) {
+                    if (!isInitialLoad && currentUserName && dataPesan.name !== currentUserName) {
                         tampilkanNotifikasiLokal(dataPesan.name, dataPesan.text);
                     }
                 }
@@ -410,7 +412,7 @@
             box.innerHTML = "";
             snapshot.forEach((docSnap) => {
                 const d = docSnap.data();
-                const isMine = d.name === currentUserName;
+                const isMine = currentUserName && d.name === currentUserName;
                 const div = document.createElement('div');
                 div.className = `msg ${isMine ? 'mine' : 'others'}`;
                 div.innerHTML = `<span style="font-size:11px; font-weight:bold; display:block; margin-bottom:4px; color:${isMine?'var(--primary)':'var(--primary-dark)'}">${d.name}</span>${d.text}`;
@@ -433,8 +435,8 @@
         });
     }
 
-    // Jalankan pengecekan nama saat pertama kali load
-    cekNamaUser();
+    // Jalankan pemuatan pesan agar bisa langsung dibaca saat pertama kali buka halaman
+    muatPesan();
 </script>
 
 </body>
