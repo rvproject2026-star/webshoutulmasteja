@@ -3,21 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>shoutul masteja info</title>
+    <title>Pusat Informasi - Shoutul Masteja</title>
     
     <!-- OneSignal Web SDK -->
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
     <script>
-        const firebaseConfig = {
-  apiKey: "AIzaSyBugJ590wIKNi3r1HHnyTyl4a1YJSSPhds",
-  authDomain: "shoutulmastejachat.firebaseapp.com",
-  databaseURL: "https://shoutulmastejachat-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "shoutulmastejachat",
-  storageBucket: "shoutulmastejachat.firebasestorage.app",
-  messagingSenderId: "40109384180",
-  appId: "1:40109384180:web:791ca0d9a012e3288699a1",
-  measurementId: "G-QGQLC2BJBZ"
-};
       window.OneSignalDeferred = window.OneSignalDeferred || [];
       OneSignalDeferred.push(async function(OneSignal) {
         await OneSignal.init({
@@ -28,59 +18,277 @@
       });
     </script>
 
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: #000; font-family: sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
-        header { background: #1a1a1a; padding: 12px; display: flex; align-items: center; gap: 15px; border-bottom: 2px solid #FFD700; position: sticky; top: 0; z-index: 10; }
-        .group-icon { width: 35px; height: 35px; background: #FFD700; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #000; }
-        #chat-box { flex: 1; padding: 15px; padding-bottom: 20px; display: flex; flex-direction: column; gap: 12px; background: #000; }
-        .msg { padding: 10px 14px; border-radius: 15px; max-width: 85%; font-size: 14px; line-height: 1.5; white-space: pre-wrap; word-wrap: break-word; }
-        .mine { align-self: flex-end; background: #FFD700; color: #000; border-bottom-right-radius: 2px; }
-        .others { align-self: flex-start; background: #1a1a1a; color: #FFD700; border: 1px solid #FFD700; border-bottom-left-radius: 2px; }
-        .bottom-controls { background: #1a1a1a; padding: 12px 12px 35px 12px; display: flex; align-items: flex-end; gap: 8px; border-top: 1px solid #333; position: sticky; bottom: 0; z-index: 10; }
-        .btn-tool { background: #222; color: #FFD700; border: 1px solid #FFD700; width: 42px; height: 42px; border-radius: 50%; font-size: 16px; cursor: pointer; display: flex; justify-content: center; align-items: center; flex-shrink: 0; }
-        #chat-form { flex: 1; display: flex; gap: 8px; }
-        #input-msg { flex: 1; background: #222; border: 1px solid #FFD700; color: #fff; padding: 10px 15px; border-radius: 20px; outline: none; height: 42px; resize: none; font-size: 14px; }
-        .btn-send { background: #FFD700; color: #000; border: none; width: 42px; height: 42px; border-radius: 50%; display: flex; justify-content: center; align-items: center; flex-shrink: 0; }
-        #login-screen { position: fixed; inset: 0; background: #000; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; padding: 20px; }
-        .peci-anim { font-size: 50px; color: #FFD700; margin-bottom: 15px; animation: bounce 2s infinite; }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        .login-box { width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 12px; }
-        .input-wa { background: #1a1a1a; border: 1px solid #FFD700; color: #fff; padding: 12px 15px; border-radius: 20px; outline: none; font-size: 14px; width: 100%; }
-        .btn-wa-login { background: #25D366; color: #fff; border: none; padding: 12px 20px; border-radius: 25px; font-weight: bold; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
+        :root {
+            --primary: #FFD700;
+            --primary-dark: #b89b00;
+            --bg-light: #f8f9fa;
+            --card-bg: #fdfbf7; /* Warna Cream Lembut */
+            --text-dark: #212529;
+            --text-gray: #555555;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; }
+        body { background: var(--bg-light); color: var(--text-dark); min-height: 100vh; display: flex; flex-direction: column; }
+        
+        header { 
+            background: rgba(255, 255, 255, 0.95); 
+            padding: 15px 20px; 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            border-bottom: 3px solid var(--primary); 
+            position: sticky; 
+            top: 0; 
+            z-index: 10; 
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .group-icon-img {
+            width: 42px; 
+            height: 42px; 
+            border-radius: 50%; 
+            overflow: hidden; 
+            border: 2px solid var(--primary); 
+            background: #121212; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+            flex-shrink: 0;
+        }
+
+        .group-icon-img img {
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover;
+        }
+
+        .group-info h4 { color: #111; font-size: 1rem; font-weight: 700; text-transform: uppercase; }
+        .group-info p { font-size: 0.75rem; color: var(--text-gray); margin-top: 2px; }
+
+        #chat-box { 
+            flex: 1; 
+            padding: 20px; 
+            padding-bottom: 30px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .msg { 
+            padding: 12px 16px; 
+            border-radius: 12px; 
+            max-width: 85%; 
+            font-size: 0.9rem; 
+            line-height: 1.6; 
+            white-space: pre-wrap; 
+            word-wrap: break-word; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .mine { 
+            align-self: flex-end; 
+            background: #111; 
+            color: var(--primary); 
+            border: 1px solid var(--primary);
+            border-bottom-right-radius: 2px; 
+        }
+
+        .others { 
+            align-self: flex-start; 
+            background: var(--card-bg); 
+            color: #111; 
+            border: 2px solid #222; 
+            border-left: 6px solid var(--primary);
+            border-bottom-left-radius: 2px; 
+        }
+
+        .bottom-controls { 
+            background: rgba(255, 255, 255, 0.95); 
+            padding: 15px 20px 35px 20px; 
+            display: flex; 
+            align-items: flex-end; 
+            gap: 10px; 
+            border-top: 1px solid #e5e5e5; 
+            position: sticky; 
+            bottom: 0; 
+            z-index: 10; 
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-tool { 
+            background: #111; 
+            color: var(--primary); 
+            border: 1px solid var(--primary); 
+            width: 45px; 
+            height: 45px; 
+            border-radius: 50%; 
+            font-size: 1rem; 
+            cursor: pointer; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            flex-shrink: 0; 
+            transition: 0.3s;
+        }
+
+        .btn-tool:hover {
+            background: var(--primary);
+            color: #000;
+        }
+
+        #chat-form { flex: 1; display: flex; gap: 10px; }
+
+        #input-msg { 
+            flex: 1; 
+            background: #fff; 
+            border: 2px solid #ddd; 
+            color: #333; 
+            padding: 12px 18px; 
+            border-radius: 25px; 
+            outline: none; 
+            height: 45px; 
+            resize: none; 
+            font-size: 0.9rem; 
+            transition: 0.3s;
+        }
+
+        #input-msg:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+        }
+
+        .btn-send { 
+            background: #111; 
+            color: var(--primary); 
+            border: 1px solid var(--primary); 
+            width: 45px; 
+            height: 45px; 
+            border-radius: 50%; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            flex-shrink: 0; 
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-send:hover {
+            background: var(--primary);
+            color: #000;
+        }
+
+        /* POPUP MODAL STYLING */
+        #popup-screen { 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(0, 0, 0, 0.6); 
+            display: none; 
+            justify-content: center; 
+            align-items: center; 
+            z-index: 100; 
+            padding: 20px; 
+            backdrop-filter: blur(5px);
+        }
+
+        .popup-box { 
+            width: 100%; 
+            max-width: 340px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 20px;
+            border: 2px solid #222;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        .popup-icon {
+            font-size: 40px;
+            color: var(--primary-dark);
+            margin-bottom: -5px;
+        }
+
+        .input-name { 
+            background: #fff; 
+            border: 2px solid #ddd; 
+            color: #333; 
+            padding: 12px 18px; 
+            border-radius: 25px; 
+            outline: none; 
+            font-size: 0.9rem; 
+            width: 100%; 
+            transition: 0.3s;
+            text-align: center;
+        }
+
+        .input-name:focus {
+            border-color: var(--primary);
+        }
+
+        .btn-save-name { 
+            background: #111; 
+            color: var(--primary); 
+            border: 1px solid var(--primary); 
+            padding: 12px 20px; 
+            border-radius: 25px; 
+            font-weight: bold; 
+            font-size: 0.9rem; 
+            cursor: pointer; 
+            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .btn-save-name:hover {
+            background: var(--primary);
+            color: #000;
+        }
     </style>
 </head>
 <body>
 
-    <div id="login-screen">
-        <div class="peci-anim"><i class="fas fa-user-tie"></i></div>
-        <div class="login-box">
-            <input type="text" id="wa-name" class="input-wa" placeholder="Ngaran maneh(Nama)" required>
-            <input type="tel" id="wa-number" class="input-wa" placeholder="Nomor WA (Contoh: 08123456789)" required>
-            <button class="btn-wa-login" onclick="mulaiLoginWA()">
-                <i class="fab fa-whatsapp" style="font-size: 18px;"></i> ASUP MAKE WHATSAPP
-            </button>
+    <!-- POPUP INPUT NAMA -->
+    <div id="popup-screen">
+        <div class="popup-box">
+            <div class="popup-icon"><i class="fas fa-id-badge"></i></div>
+            <h3 style="color: #111; font-size: 1.1rem;">Kenalan Dulu Yuk!</h3>
+            <p style="font-size: 0.8rem; color: var(--text-gray);">Masukkan nama panggilan atau namamu agar teman-teman tahu siapa yang mengirim informasi.</p>
+            <input type="text" id="user-name-input" class="input-name" placeholder="Tulis nama kamu di sini..." required>
+            <button class="btn-save-name" onclick="simpanNamaUser()">SIMPAN & LANJUTKAN</button>
         </div>
-        <h6 style="margin-top: 20px; color: #666; padding: 0 20px; text-align: center;">Isi nama jeung nomor WhatsApp jang bisa ngirim info</h6>
     </div>
 
     <header>
-        <div class="group-icon"><i class="fas fa-crown"></i></div>
+        <div class="group-icon-img">
+            <img src="logo-masteja.png" alt="Logo">
+        </div>
         <div class="group-info">
-            <h4 style="color: #FFD700; font-size: 15px;">shoutul masteja info</h4>
-            <p style="font-size:9px; color:#888;">pencet rada hebel jang hapus pesan</p>
+            <h4>Shoutul Masteja Info</h4>
+            <p>Tekan agak lama pada pesan untuk menghapus pesan</p>
         </div>
     </header>
 
     <div id="chat-box"></div>
 
     <div class="bottom-controls">
-        <button type="button" class="btn-tool" onclick="pakaiTemplate()" title="Nyieun Pengumuman">
+        <button type="button" class="btn-tool" onclick="pakaiTemplate()" title="Buat Pengumuman">
             <i class="fas fa-bullhorn"></i>
         </button>
         <form id="chat-form">
-            <textarea id="input-msg" placeholder="Tulis pesan..."></textarea>
+            <textarea id="input-msg" placeholder="Tulis pesan informasi..."></textarea>
             <button type="submit" class="btn-send"><i class="fas fa-paper-plane"></i></button>
         </form>
     </div>
@@ -102,7 +310,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    let currentUser = null;
+    let currentUserName = null;
     let isInitialLoad = true;
 
     function mintaIzinNotifikasi() {
@@ -120,73 +328,70 @@
         }
     }
 
-    window.mulaiLoginWA = () => {
-        const nameInput = document.getElementById('wa-name').value.trim();
-        const numberInput = document.getElementById('wa-number').value.trim();
-        if (!nameInput || !numberInput) { alert("Eusian nama jeung nomor WA heula!"); return; }
-
-        let formattedNumber = numberInput.replace(/[^0-9]/g, '');
-        if (formattedNumber.startsWith('0')) { formattedNumber = '62' + formattedNumber.slice(1); }
-
-        currentUser = { uid: 'wa_' + formattedNumber, displayName: nameInput, phoneNumber: formattedNumber };
-        localStorage.setItem('sm_user', JSON.stringify(currentUser));
-        
-        if (window.OneSignalDeferred) {
-            window.OneSignalDeferred.push(async function(OneSignal) {
-                await OneSignal.login(currentUser.uid);
-            });
+    // Fungsi saat tombol simpan nama di popup ditekan
+    window.simpanNamaUser = () => {
+        const inputVal = document.getElementById('user-name-input').value.trim();
+        if (!inputVal) {
+            alert("Harap masukkan nama kamu terlebih dahulu!");
+            return;
         }
 
+        currentUserName = inputVal;
+        // Simpan ke localStorage agar tidak perlupopup terus menerus di HP yang sama
+        localStorage.setItem('sm_username_simple', currentUserName);
+
+        document.getElementById('popup-screen').style.display = 'none';
         mintaIzinNotifikasi();
-        document.getElementById('login-screen').style.display = 'none';
         muatPesan();
     };
 
-    function checkAuth() {
-        const savedUser = localStorage.getItem('sm_user');
-        if (savedUser) {
-            currentUser = JSON.parse(savedUser);
-            if (window.OneSignalDeferred) {
-                window.OneSignalDeferred.push(async function(OneSignal) {
-                    await OneSignal.login(currentUser.uid);
-                });
-            }
+    function cekNamaUser() {
+        const savedName = localStorage.getItem('sm_username_simple');
+        if (savedName) {
+            currentUserName = savedName;
+            document.getElementById('popup-screen').style.display = 'none';
             mintaIzinNotifikasi();
-            document.getElementById('login-screen').style.display = 'none';
             muatPesan();
         } else {
-            document.getElementById('login-screen').style.display = 'flex';
+            // Tampilkan popup jika nama belum ada
+            document.getElementById('popup-screen').style.display = 'flex';
         }
     }
 
     window.pakaiTemplate = () => {
         const input = document.getElementById('input-msg');
-        input.value = "📣 *PENGUMUMAN SHOUTUL MASTEJA*\n\n🇲🇨 Alamat: \n💼 Job: \n📍 Tempat: \n⏰ Waktu: \n\nhayu urang gembrung!";
+        input.value = "📢 *PENGUMUMAN SHOUTUL MASTEJA*\n\n📍 Alamat: \n💼 Job: \n⏰ Tempat: \n⌛ Waktu: \n\nHayu urang gembrung!";
         input.style.height = "140px"; 
         input.focus();
     };
 
     document.getElementById('chat-form').onsubmit = async (e) => {
         e.preventDefault();
+        
+        // Pastikan nama sudah diisi lewat popup sebelum kirim pesan
+        if (!currentUserName) {
+            document.getElementById('popup-screen').style.display = 'flex';
+            return;
+        }
+
         const input = document.getElementById('input-msg');
         const teks = input.value.trim();
-        if (!teks || !currentUser) return;
+        if (!teks) return;
         
         try {
             await addDoc(collection(db, "messages"), {
                 text: teks,
-                uid: currentUser.uid,
-                name: currentUser.displayName,
+                name: currentUserName,
                 time: serverTimestamp()
             });
 
             input.value = "";
-            input.style.height = "42px";
+            input.style.height = "45px";
         } catch (err) { alert(err.message); }
     };
 
     function muatPesan() {
-        if (!currentUser) return;
+        if (!currentUserName) return;
         const q = query(collection(db, "messages"), orderBy("time", "asc"), limit(50));
         
         onSnapshot(q, (snapshot) => {
@@ -196,7 +401,7 @@
                 if (change.type === "added") {
                     const dataPesan = change.doc.data();
                     
-                    if (!isInitialLoad && dataPesan.uid !== currentUser.uid) {
+                    if (!isInitialLoad && dataPesan.name !== currentUserName) {
                         tampilkanNotifikasiLokal(dataPesan.name, dataPesan.text);
                     }
                 }
@@ -205,15 +410,15 @@
             box.innerHTML = "";
             snapshot.forEach((docSnap) => {
                 const d = docSnap.data();
-                const isMine = d.uid === currentUser.uid;
+                const isMine = d.name === currentUserName;
                 const div = document.createElement('div');
                 div.className = `msg ${isMine ? 'mine' : 'others'}`;
-                div.innerHTML = `<span style="font-size:10px; font-weight:bold; display:block; margin-bottom:4px; color:${isMine?'#000':'#FFD700'}">${d.name}</span>${d.text}`;
+                div.innerHTML = `<span style="font-size:11px; font-weight:bold; display:block; margin-bottom:4px; color:${isMine?'var(--primary)':'var(--primary-dark)'}">${d.name}</span>${d.text}`;
                 
                 let timer;
                 div.ontouchstart = () => {
                     timer = setTimeout(() => {
-                        if (confirm("Hapus chat ieu?")) {
+                        if (confirm("Hapus pesan ini?")) {
                             deleteDoc(doc(db, "messages", docSnap.id));
                         }
                     }, 800);
@@ -228,7 +433,8 @@
         });
     }
 
-    checkAuth();
+    // Jalankan pengecekan nama saat pertama kali load
+    cekNamaUser();
 </script>
 
 </body>
