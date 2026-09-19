@@ -3,35 +3,232 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auto-Loop Media Gallery</title>
+    <title>Koleksi Video & Media - Shoutul Masteja</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        :root { --y: #ffde00; --b: #000; --c: #1a1a1a; }
-        body { background: var(--b); color: white; font-family: sans-serif; margin: 0; padding: 20px; }
-        header { text-align: center; border-bottom: 3px solid var(--y); padding: 40px 0; margin-bottom: 30px; }
-        h1 { color: var(--y); margin: 0; letter-spacing: 5px; text-transform: uppercase; }
+        :root {
+            --primary: #FFD700;
+            --primary-dark: #b89b00;
+            --bg-light: #f8f9fa;
+            --card-bg: #fdfbf7; /* Warna Cream Lembut */
+            --text-dark: #212529;
+            --text-gray: #555555;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', 'Segoe UI', sans-serif; }
+        body { background-color: var(--bg-light); color: var(--text-dark); line-height: 1.7; scroll-behavior: smooth; }
+
+        /* Navigation */
+        nav {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 3px solid var(--primary);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .brand-logo-img {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .brand-logo-img img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary);
+            background-color: #121212;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .brand-logo-text .title {
+            font-size: 0.95rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #111;
+            line-height: 1.2;
+        }
+
+        .brand-logo-text .subtitle {
+            font-size: 0.65rem;
+            color: var(--primary-dark);
+            font-weight: bold;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .nav-back-btn {
+            background: #111;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .nav-back-btn:hover {
+            background: var(--primary);
+            color: #000;
+        }
+
+        /* Header Info */
+        header { 
+            text-align: center; 
+            max-width: 800px;
+            margin: 30px auto 20px;
+            padding: 0 20px;
+        }
         
-        .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
-        .card { background: var(--c); border-radius: 12px; overflow: hidden; border: 1px solid #333; transition: 0.3s; }
-        .card:hover { border-color: var(--y); transform: scale(1.02); }
+        h1 { 
+            color: #111; 
+            margin-bottom: 10px; 
+            font-size: 1.6rem; 
+            text-transform: uppercase; 
+            letter-spacing: 2px;
+        }
+
+        header p {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+        }
         
-        .media-container { width: 100%; height: 200px; background: #000; }
-        .card video { width: 100%; height: 100%; object-fit: cover; display: block; }
+        /* Gallery Grid */
+        .gallery { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 25px; 
+            max-width: 1200px; 
+            margin: 30px auto; 
+            padding: 0 20px;
+        }
+
+        .card { 
+            background: var(--card-bg); 
+            border-radius: 15px; 
+            overflow: hidden; 
+            border: 2px solid #222; 
+            border-left: 8px solid var(--primary);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            transition: 0.3s; 
+            animation: fadeIn 0.5s ease;
+        }
+
+        .card:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+        }
         
-        .info { padding: 15px; text-align: center; }
-        .info span { font-size: 14px; font-weight: bold; color: var(--y); display: block; margin-bottom: 10px; }
+        .media-container { 
+            width: 100%; 
+            height: 200px; 
+            background: #000; 
+        }
+
+        .card video, .card img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            display: block; 
+        }
         
-        .btn-dl { display: block; background: var(--y); color: black; padding: 10px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 12px; transition: 0.3s; }
-        .btn-dl:hover { background: #fff; }
+        .info { 
+            padding: 20px; 
+            text-align: center; 
+        }
+
+        .info span { 
+            font-size: 0.95rem; 
+            font-weight: bold; 
+            color: #111; 
+            display: block; 
+            margin-bottom: 15px; 
+        }
+        
+        .btn-dl { 
+            display: inline-block; 
+            background: #111; 
+            color: var(--primary); 
+            padding: 10px 20px; 
+            border-radius: 8px; 
+            text-decoration: none; 
+            font-weight: bold; 
+            font-size: 0.85rem; 
+            border: 1px solid var(--primary);
+            transition: 0.3s; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        .btn-dl:hover { 
+            background: var(--primary); 
+            color: #000; 
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(20px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        /* Footer */
+        footer { 
+            text-align: center; 
+            padding: 40px 20px; 
+            color: #666; 
+            font-size: 0.8rem; 
+            background: #ffffff; 
+            border-top: 1px solid #e5e5e5; 
+            margin-top: 50px;
+        }
     </style>
 </head>
 <body>
 
+<nav>
+    <div class="nav-container">
+        <a href="index.html" class="brand-logo-img">
+            <img src="logo-masteja.png" alt="Logo">
+            <div class="brand-logo-text">
+                <div class="title">Shoutul Masteja</div>
+                <div class="subtitle">Hadroh Official</div>
+            </div>
+        </a>
+        <a href="index.html" class="nav-back-btn"><i class="fas fa-home"></i> Kembali ke Beranda</a>
+    </div>
+</nav>
+
 <header>
-    <h1>KOLEKSI VIDEO</h1>
-    <p>Dokumentasi Group Hadroh SHoutulmasteja</p>
+    <h1>Koleksi Video & Media</h1>
+    <p>Pusat arsip dan galeri kenangan digital untuk mengabadikan momen kebersamaan Shoutul Masteja Versi 3.4</p>
 </header>
 
 <div class="gallery" id="gallery"></div>
+
+<footer>
+    <p>Database Media Versi 3.4 barudak shoutul masteja - Update 2025</p>
+    <p style="margin: 5px 0;">dung tak tak adun muid</p>
+    <p style="margin-top: 10px; color: var(--primary-dark); font-weight: bold;">Shollu 'alan Nabi Muhammad!</p>
+</footer>
 
 <script>
     const gallery = document.getElementById('gallery');
@@ -46,6 +243,7 @@
     function loadGallery() {
         gallery.innerHTML = '';
         
+        // Load Video
         for (let i = 1; i <= jumlahVideo; i++) {
             const fileName = `vid${i}${formatFile}`;
             const filePath = folderPath + fileName;
@@ -58,7 +256,25 @@
                 </div>
                 <div class="info">
                     <span>Video Bagian ${i}</span>
-                    <a href="${filePath}" download="${fileName}" class="btn-dl">DOWNLOAD MP4</a>
+                    <a href="${filePath}" download="${fileName}" class="btn-dl"><i class="fas fa-download"></i> DOWNLOAD MP4</a>
+                </div>
+            `;
+            gallery.appendChild(card);
+        }
+
+        // Load Foto
+        const jumlahPoto = 5; // Ganti sesuai jumlah foto Anda
+        for (let j = 1; j <= jumlahPoto; j++) {
+            const fileName = `poto${j}.jpg`; // Pastikan namanya poto1.jpg, poto2.jpg, dst
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <div class="media-container">
+                    <img src="${fileName}" alt="Foto ${j}">
+                </div>
+                <div class="info">
+                    <span>Gambar Ke-${j}</span>
+                    <a href="${fileName}" download="${fileName}" class="btn-dl"><i class="fas fa-download"></i> DOWNLOAD JPG</a>
                 </div>
             `;
             gallery.appendChild(card);
@@ -67,24 +283,6 @@
 
     // Jalankan fungsi
     loadGallery();
-    // Tambahkan ini di dalam fungsi loadGallery(), di bawah loop video
-const jumlahPoto = 5; // Ganti sesuai jumlah foto Anda
-for (let j = 1; j <= jumlahPoto; j++) {
-    const fileName = `poto${j}.jpg`; // Pastikan namanya poto1.jpg, poto2.jpg, dst
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML = `
-        <div class="media-container">
-            <img src="${fileName}" alt="Foto ${j}" style="width:100%; height:100%; object-fit:cover;">
-        </div>
-        <div class="info">
-            <span>Gambar Ke-${j}</span>
-            <a href="${fileName}" download="${fileName}" class="btn-dl">DOWNLOAD JPG</a>
-        </div>
-    `;
-    gallery.appendChild(card);
-}
-
 </script>
 
 </body>
