@@ -99,6 +99,7 @@
             white-space: pre-wrap; 
             word-wrap: break-word; 
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            position: relative; 
         }
 
         .mine { 
@@ -124,6 +125,72 @@
             margin-top: 8px;
             display: block;
             cursor: pointer;
+        }
+
+        /* Styling Tombol Menu Panah (^) */
+        .msg-menu-btn {
+            position: absolute;
+            top: 6px;
+            right: 8px;
+            background: transparent;
+            border: none;
+            color: inherit;
+            opacity: 0.6;
+            font-size: 0.85rem;
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 4px;
+            transition: 0.2s;
+        }
+
+        .msg-menu-btn:hover {
+            opacity: 1;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Dropdown Menu Pesan */
+        .msg-dropdown {
+            display: none;
+            position: absolute;
+            top: 30px;
+            right: 8px;
+            background: #fff;
+            color: #212529;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            z-index: 20;
+            min-width: 150px;
+            overflow: hidden;
+        }
+
+        .msg-dropdown button {
+            width: 100%;
+            background: none;
+            border: none;
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 0.85rem;
+            cursor: pointer;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .msg-dropdown button:last-child {
+            border-bottom: none;
+            color: #d9534f; /* Warna merah untuk opsi hapus */
+        }
+
+        .msg-dropdown button:hover {
+            background: #f5f5f5;
+        }
+        
+        .msg-dropdown button:last-child:hover {
+            background: #f8d7da;
         }
 
         .bottom-controls { 
@@ -292,7 +359,7 @@
         </div>
         <div class="group-info">
             <h4>Shoutul Masteja Info</h4>
-            <p>Tekan agak lama pada pesan untuk menghapus pesan</p>
+            <p>Klik ikon panah (^) untuk opsi salin, bagikan, atau hapus</p>
         </div>
     </header>
 
@@ -304,7 +371,7 @@
             <i class="fas fa-bullhorn"></i>
         </button>
 
-        <!-- Tombol Lampiran Gambar (Mirip WhatsApp) -->
+        <!-- Tombol Lampiran Gambar -->
         <label for="input-file-img" class="btn-tool" title="Kirim Foto" style="cursor: pointer; margin-bottom: 0;">
             <i class="fas fa-paperclip"></i>
         </label>
@@ -386,18 +453,16 @@
         inputMsg.focus();
     };
 
-    // Fungsi Mengompres & Memproses Gambar yang Dipilih
     window.prosesPilihGambar = (event) => {
         if (!currentUserName) {
             document.getElementById('popup-screen').style.display = 'flex';
-            event.target.value = ""; // Reset pilihan file
+            event.target.value = ""; 
             return;
         }
 
         const file = event.target.files[0];
         if (!file) return;
 
-        // Validasi ukuran (maksimal ~2MB agar ringan masuk database Firestore)
         if (file.size > 2 * 1024 * 1024) {
             alert("Ukuran gambar terlalu besar! Maksimal 2MB.");
             event.target.value = "";
@@ -418,7 +483,7 @@
             } catch (err) {
                 alert("Gagal mengunggah gambar: " + err.message);
             }
-            event.target.value = ""; // Reset input file
+            event.target.value = ""; 
         };
         reader.readAsDataURL(file);
     };
@@ -449,6 +514,72 @@
         }
     };
 
+    // Fungsi Dropdown Menu Pesan
+    window.toggleMsgMenu = (btnElement, event) => {
+        event.stopPropagation();
+        document.querySelectorAll('.msg-dropdown').forEach(menu => {
+            if (menu !== btnElement.nextElementSibling) {
+                menu.style.display = 'none';
+            }
+        });
+        
+        const dropdown = btnElement.nextElementSibling;
+        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    };
+
+    window.addEventListener('click', () => {
+        document.querySelectorAll('.msg-dropdown').forEach(menu => {
+            menu.style.display = 'none';
+        });
+    });
+
+    // Fitur Salin Teks Pesan
+    window.salinPesan = (teksPesan) => {
+        navigator.clipboard.writeText(teksPesan).then(() => {
+            alert("Pesan berhasil disalin ke clipboard!");
+        }).catch(err => {
+            alert("Gagal menyalin pesan.");
+        });
+    };
+
+    // Fitur Bagikan Info (Memicu Native Share Dialog HP/Laptop secara otomatis)
+    window.bagikanInfo = async (teksPesan) => {
+        const infoUrl = window.location.origin + window.location.pathname; 
+        const shareData = {
+            title: 'Informasi Shoutul Masteja',
+            text: `*Informasi Shoutul Masteja*\n\n${teksPesan}\n\n🔗 Baca selengkapnya di:`,
+            url: infoUrl
+        };
+
+        if (navigator.share) {
+            try {
+                await navigator.share(shareData);
+            } catch (err) {
+                // Jika user membatalkan share, abaikan error
+                if (err.name !== 'AbortError') {
+                    console.log("Error sharing:", err);
+                }
+            }
+        } else {
+            // Fallback jika browser tidak mendukung fitur share bawaan sistem
+            const fullText = `${shareData.text}\n${shareData.url}`;
+            navigator.clipboard.writeText(fullText).then(() => {
+                alert("Link dan info berhasil disalin! Silakan tempel (paste) ke WhatsApp atau media sosial.");
+            });
+        }
+    };
+
+    // Fungsi Hapus Pesan
+    window.hapusPesan = async (docId) => {
+        if (confirm("Yakin ingin menghapus pesan ini?")) {
+            try {
+                await deleteDoc(doc(db, "messages", docId));
+            } catch (err) {
+                alert("Gagal menghapus pesan: " + err.message);
+            }
+        }
+    };
+
     function muatPesan() {
         const q = query(collection(db, "messages"), orderBy("time", "asc"), limit(50));
         
@@ -472,7 +603,19 @@
                 const div = document.createElement('div');
                 div.className = `msg ${isMine ? 'mine' : 'others'}`;
                 
-                let htmlContent = `<span style="font-size:11px; font-weight:bold; display:block; margin-bottom:4px; color:${isMine?'var(--primary)':'var(--primary-dark)'}">${d.name}</span>`;
+                const safeText = d.text ? d.text.replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, '\\n') : (d.imageUrl ? "[Kirim Foto]" : "");
+
+                let htmlContent = `
+                    <button class="msg-menu-btn" onclick="toggleMsgMenu(this, event)" title="Opsi Pesan">
+                        <i class="fas fa-chevron-down" style="font-size: 10px;"></i>
+                    </button>
+                    <div class="msg-dropdown">
+                        <button onclick="salinPesan('${safeText}')"><i class="fas fa-copy"></i> Salin Teks</button>
+                        <button onclick="bagikanInfo('${safeText}')"><i class="fas fa-share-alt"></i> Bagikan Info</button>
+                        <button onclick="hapusPesan('${docSnap.id}')"><i class="fas fa-trash-alt"></i> Hapus Pesan</button>
+                    </div>
+                    <span style="font-size:11px; font-weight:bold; display:block; margin-bottom:4px; color:${isMine?'var(--primary)':'var(--primary-dark)'}">${d.name}</span>
+                `;
                 
                 if (d.text) {
                     htmlContent += `<span>${d.text}</span>`;
@@ -482,17 +625,6 @@
                 }
 
                 div.innerHTML = htmlContent;
-                
-                let timer;
-                div.ontouchstart = () => {
-                    timer = setTimeout(() => {
-                        if (confirm("Hapus pesan ini?")) {
-                            deleteDoc(doc(db, "messages", docSnap.id));
-                        }
-                    }, 800);
-                };
-                div.ontouchend = () => clearTimeout(timer);
-
                 box.appendChild(div);
             });
 
