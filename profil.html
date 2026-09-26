@@ -329,7 +329,7 @@
             cursor: pointer;
         }
 
-        /* MODAL CADANGAN (UNTUK PC / BROWSER YANG TIDAK SUPPORT NATIVE SHARE) */
+        /* MODAL CADANGAN (KHUSUS PC/LAPTOP) */
         #share-modal {
             display: none;
             position: fixed;
@@ -516,8 +516,8 @@
     </div>
 </div>
 
-<!-- Canvas Tersembunyi -->
-<canvas id="share-canvas" width="800" height="450"></canvas>
+<!-- Canvas Tersembunyi (Format Poster Foto Eksklusif) -->
+<canvas id="share-canvas" width="800" height="1000"></canvas>
 
 <footer>
     <p>Database Media Versi 3.4 barudak shoutul masteja - Update 2025</p>
@@ -585,7 +585,7 @@
         });
     });
 
-    // Proses Buat Gambar Berwatermark dan Kirim Sekaligus (Native Share HP)
+    // Proses Pembuatan Gambar Poster Eksklusif (Foto Besar + Watermark Putih di Tengah)
     function generateAndShareProfile(nama, peran, desc, fotoSrc) {
         const canvas = document.getElementById('share-canvas');
         const ctx = canvas.getContext('2d');
@@ -595,7 +595,7 @@
         img.src = fotoSrc;
 
         img.onload = function() {
-            renderCanvasContent(ctx, canvas, img, nama, peran, desc);
+            renderCanvasPoster(ctx, canvas, img, nama, peran, desc);
             executeSharing(canvas, nama, peran);
         };
 
@@ -604,59 +604,102 @@
             fallbackImg.crossOrigin = "anonymous";
             fallbackImg.src = 'logo-masteja.png';
             fallbackImg.onload = function() {
-                renderCanvasContent(ctx, canvas, fallbackImg, nama, peran, desc);
+                renderCanvasPoster(ctx, canvas, fallbackImg, nama, peran, desc);
                 executeSharing(canvas, nama, peran);
             };
         };
     }
 
-    function renderCanvasContent(ctx, canvas, img, nama, peran, desc) {
-        ctx.fillStyle = "#ffffff";
+    function renderCanvasPoster(ctx, canvas, img, nama, peran, desc) {
+        // 1. Background Gelap Elegan untuk Poster Profil
+        ctx.fillStyle = "#0f172a";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        ctx.strokeStyle = "#e2e8f0";
-        ctx.lineWidth = 4;
+        // Aksen Garis Emas di Pinggir
+        ctx.strokeStyle = "#FFD700";
+        ctx.lineWidth = 8;
         ctx.strokeRect(0, 0, canvas.width, canvas.height);
 
-        ctx.fillStyle = "#FFD700";
-        ctx.fillRect(0, 0, 16, canvas.height);
+        // 2. Area Foto Besar di Bagian Atas/Tengah Poster
+        const photoX = 60;
+        const photoY = 60;
+        const photoWidth = 680;
+        const photoHeight = 600;
 
         ctx.save();
-        ctx.beginPath();
-        ctx.arc(140, 225, 90, 0, Math.PI * 2, true);
-        ctx.closePath();
-        ctx.clip();
-        ctx.drawImage(img, 50, 135, 180, 180);
+        ctx.fillStyle = "#1e293b";
+        ctx.fillRect(photoX, photoY, photoWidth, photoHeight);
+
+        // Gambar Foto Personil (diposisikan agar rapi)
+        ctx.drawImage(img, photoX, photoY, photoWidth, photoHeight);
+
+        // 3. WATERMARK PUTIH TRANSPARAN DI TENGAH FOTO
+        ctx.save();
+        ctx.translate(photoX + photoWidth / 2, photoY + photoHeight / 2);
+        ctx.rotate(-Math.PI / 12); // Rotasi sedikit miring agar estetik
+        ctx.font = "bold 65px 'Inter', sans-serif";
+        ctx.fillStyle = "rgba(255, 255, 255, 0.18)"; // Putih transparan
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("SHOUTUL MASTEJA", 0, 0);
         ctx.restore();
 
-        ctx.beginPath();
-        ctx.arc(140, 225, 90, 0, Math.PI * 2, true);
-        ctx.lineWidth = 6;
+        // Bingkai Foto Emas Tipis
         ctx.strokeStyle = "#FFD700";
-        ctx.stroke();
+        ctx.lineWidth = 3;
+        ctx.strokeRect(photoX, photoY, photoWidth, photoHeight);
+        ctx.restore();
 
-        ctx.fillStyle = "#0f172a";
-        ctx.font = "bold 32px 'Inter', sans-serif";
-        ctx.fillText(nama, 270, 165);
+        // 4. Bagian Informasi Di Bawah Foto
+        // Nama Personil
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 40px 'Inter', sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(nama, canvas.width / 2, 725);
 
-        ctx.fillStyle = "#fef3c7";
+        // Badge Jabatan/Peran
+        ctx.font = "bold 20px 'Inter', sans-serif";
+        const badgeWidth = ctx.measureText(peran.toUpperCase()).width + 40;
+        ctx.fillStyle = "#b89b00";
         ctx.beginPath();
-        ctx.roundRect(270, 190, ctx.measureText(peran).width + 24, 34, 17);
+        ctx.roundRect((canvas.width - badgeWidth) / 2, 755, badgeWidth, 40, 20);
         ctx.fill();
 
-        ctx.fillStyle = "#92400e";
-        ctx.font = "bold 16px 'Inter', sans-serif";
-        ctx.fillText(peran.toUpperCase(), 282, 213);
+        ctx.fillStyle = "#ffffff";
+        ctx.fillText(peran.toUpperCase(), canvas.width / 2, 782);
 
-        ctx.fillStyle = "#64748b";
-        ctx.font = "18px 'Inter', sans-serif";
-        wrapText(ctx, desc, 270, 260, 480, 26);
+        // Deskripsi Singkat
+        ctx.fillStyle = "#94a3b8";
+        ctx.font = "20px 'Inter', sans-serif";
+        wrapCenteredText(ctx, desc, canvas.width / 2, 835, 680, 28);
 
-        ctx.fillStyle = "rgba(184, 155, 0, 0.3)";
-        ctx.font = "bold 22px 'Inter', sans-serif";
-        ctx.textAlign = "right";
-        ctx.fillText("SHOUTUL MASTEJA", canvas.width - 30, canvas.height - 25);
-        ctx.textAlign = "left";
+        // Footer / Branding Website di Bagian Paling Bawah Poster
+        ctx.fillStyle = "#FFD700";
+        ctx.font = "bold 18px 'Inter', sans-serif";
+        ctx.fillText("Official Website: Shoutul Masteja Hadroh", canvas.width / 2, 955);
+        ctx.textAlign = "left"; // Reset alignment
+    }
+
+    function wrapCenteredText(context, text, x, y, maxWidth, lineHeight) {
+        const words = text.split(' ');
+        let line = '';
+        let lines = [];
+        
+        for(let n = 0; n < words.length; n++) {
+            const testLine = line + words[n] + ' ';
+            const metrics = context.measureText(testLine);
+            if (metrics.width > maxWidth && n > 0) {
+                lines.push(line);
+                line = words[n] + ' ';
+            } else {
+                line = testLine;
+            }
+        }
+        lines.push(line);
+
+        for (let i = 0; i < lines.length; i++) {
+            context.fillText(lines[i], x, y + (i * lineHeight));
+        }
     }
 
     async function executeSharing(canvas, nama, peran) {
@@ -666,7 +709,6 @@
         canvas.toBlob(async function(blob) {
             const file = new File([blob], `profil-${nama.replace(/\s+/g, '-').toLowerCase()}.png`, { type: "image/png" });
             
-            // Cek apakah HP mendukung fitur berbagi file gambar + teks sekaligus
             if (navigator.canShare && navigator.canShare({ files: [file] })) {
                 try {
                     await navigator.share({
@@ -674,14 +716,13 @@
                         text: shareText,
                         files: [file]
                     });
-                    return; // Berhasil membuka menu share bawaan HP (WhatsApp, Facebook, dll dengan gambar & teks lengkap)
+                    return;
                 } catch (err) {
                     console.log('Berbagi dibatalkan pengguna');
                     return;
                 }
             }
 
-            // Fallback untuk PC / browser yang tidak mendukung file share: buka modal preview
             showShareModal(canvas, nama, peran, shareText);
         }, 'image/png');
     }
@@ -704,24 +745,6 @@
 
     function closeShareModal() {
         document.getElementById('share-modal').style.display = 'none';
-    }
-
-    function wrapText(context, text, x, y, maxWidth, lineHeight) {
-        const words = text.split(' ');
-        let line = '';
-        for(let n = 0; n < words.length; n++) {
-            const testLine = line + words[n] + ' ';
-            const metrics = context.measureText(testLine);
-            const testWidth = metrics.width;
-            if (testWidth > maxWidth && n > 0) {
-                context.fillText(line, x, y);
-                line = words[n] + ' ';
-                y += lineHeight;
-            } else {
-                line = testLine;
-            }
-        }
-        context.fillText(line, x, y);
     }
 
     function initFullscreenPhoto() {
