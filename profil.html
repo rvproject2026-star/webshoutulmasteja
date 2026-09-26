@@ -117,7 +117,7 @@
             font-size: 0.88rem;
         }
 
-        /* Profile Layout (Berbeda dari Galeri yang berbentuk Grid Kotak Foto) */
+        /* Profile Layout */
         .profile-container {
             max-width: 850px;
             margin: 0 auto 50px;
@@ -138,10 +138,9 @@
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04);
             transition: all 0.3s ease;
             position: relative;
-            overflow: hidden;
+            overflow: visible; /* Penting agar menu titik tiga tidak terpotong */
         }
 
-        /* Aksen garis kuning elegan di sebelah kiri kartu */
         .profile-card::before {
             content: '';
             position: absolute;
@@ -150,12 +149,90 @@
             height: 100%;
             width: 5px;
             background: var(--primary);
+            border-top-left-radius: 16px;
+            border-bottom-left-radius: 16px;
         }
 
         .profile-card:hover {
             transform: translateY(-3px);
             box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.08);
             border-color: #cbd5e1;
+        }
+
+        /* Tombol Titik Tiga di Pojok Kanan Atas Kartu */
+        .card-menu-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #f1f5f9;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #475569;
+            font-size: 0.9rem;
+            transition: 0.2s;
+            z-index: 10;
+        }
+
+        .card-menu-btn:hover {
+            background: var(--primary);
+            color: #000;
+        }
+
+        /* Dropdown Menu Popup */
+        .card-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 50px;
+            right: 15px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            padding: 6px;
+            z-index: 20;
+            min-width: 150px;
+            animation: fadeInMenu 0.2s ease;
+        }
+
+        .card-dropdown-menu.active {
+            display: block;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            font-size: 0.8rem;
+            color: #334155;
+            text-decoration: none;
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .dropdown-item:hover {
+            background: #f8fafc;
+            color: #0f172a;
+        }
+
+        .dropdown-item i {
+            color: #25D366; /* Warna hijau khas share/whatsapp */
+        }
+
+        @keyframes fadeInMenu {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .profile-avatar-wrapper {
@@ -184,6 +261,7 @@
 
         .profile-details {
             flex-grow: 1;
+            padding-right: 25px; /* Ruang agar tidak tertutup tombol titik tiga */
         }
 
         .profile-name-tag {
@@ -262,12 +340,20 @@
             to { transform: scale(1); opacity: 1; }
         }
 
+        /* Canvas tersembunyi untuk merender gambar berwatermark */
+        #share-canvas {
+            display: none;
+        }
+
         /* Responsif untuk HP */
         @media (max-width: 600px) {
             .profile-card {
                 flex-direction: column;
                 text-align: center;
                 padding: 20px;
+            }
+            .profile-details {
+                padding-right: 0;
             }
             .profile-name-tag {
                 justify-content: center;
@@ -321,6 +407,9 @@
     <img id="modal-img" src="" alt="Full Screen Preview">
 </div>
 
+<!-- Canvas tersembunyi untuk cetak gambar berwatermark -->
+<canvas id="share-canvas" width="800" height="450"></canvas>
+
 <footer>
     <p>Database Media Versi 3.4 barudak shoutul masteja - Update 2025</p>
     <p style="margin: 5px 0;">dung tak tak adun muid</p>
@@ -328,7 +417,6 @@
 </footer>
 
 <script>
-    // Data Personil (Silakan ubah nama, peran, deskripsi, dan nama file fotonya sesuai kebutuhan)
     const dataPersonil = [
         {
             nama: "Bapak Wahyudi",
@@ -349,7 +437,7 @@
             foto: "pandi.jpg"
         },
         {
-            nama: " RONIUS",
+            nama: "RONIUS",
             peran: "Pemain Rebana",
             desc: "Pengatur tempo dan ketukan dasar yang menjaga kestabilan irama tabuhan hadroh.",
             foto: "bahron.jpg"
@@ -374,7 +462,7 @@
         },
         {
             nama: "GUS EPU",
-            peran: "Pemain bas",
+            peran: "Pemain Bas",
             desc: "Pengatur tempo dan ketukan dasar yang menjaga kestabilan irama tabuhan hadroh.",
             foto: "epu.jpg"
         }
@@ -384,10 +472,18 @@
 
     function loadProfiles() {
         container.innerHTML = '';
-        dataPersonil.forEach(p => {
+        dataPersonil.forEach((p, index) => {
             const card = document.createElement('div');
             card.className = 'profile-card';
             card.innerHTML = `
+                <button class="card-menu-btn" onclick="toggleMenu(event, ${index})">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <div class="card-dropdown-menu" id="menu-${index}">
+                    <button class="dropdown-item" onclick="shareProfileImage('${p.nama}', '${p.peran}', '${p.desc}', '${p.foto}')">
+                        <i class="fas fa-share-alt"></i> Bagikan Gambar
+                    </button>
+                </div>
                 <div class="profile-avatar-wrapper">
                     <img src="${p.foto}" alt="${p.nama}" class="clickable-photo" data-src="${p.foto}" onerror="this.src='logo-masteja.png'" title="Klik untuk lihat foto full screen">
                 </div>
@@ -403,6 +499,140 @@
         });
 
         initFullscreenPhoto();
+    }
+
+    // Fungsi Buka-Tutup Dropdown Titik Tiga
+    function toggleMenu(event, index) {
+        event.stopPropagation();
+        // Tutup semua menu lain terlebih dahulu
+        document.querySelectorAll('.card-dropdown-menu').forEach((menu, i) => {
+            if (i !== index) menu.classList.remove('active');
+        });
+        const currentMenu = document.getElementById(`menu-${index}`);
+        currentMenu.classList.toggle('active');
+    }
+
+    // Tutup menu jika klik di luar area
+    window.addEventListener('click', () => {
+        document.querySelectorAll('.card-dropdown-menu').forEach(menu => {
+            menu.classList.remove('active');
+        });
+    });
+
+    // Fungsi Utama: Buat Gambar Berwatermark & Bagikan
+    function shareProfileImage(nama, peran, desc, fotoSrc) {
+        const canvas = document.getElementById('share-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Buat objek gambar dari foto personil
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.src = fotoSrc;
+
+        img.onload = function() {
+            // 1. Gambar Latar Belakang Kartu (Putih bersih dengan aksen garis pinggir)
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Garis pinggir atas-bawah-kanan-kiri
+            ctx.strokeStyle = "#e2e8f0";
+            ctx.lineWidth = 4;
+            ctx.strokeRect(0, 0, canvas.width, canvas.height);
+
+            // Aksen garis kuning di sisi kiri kartu
+            ctx.fillStyle = "#FFD700";
+            ctx.fillRect(0, 0, 16, canvas.height);
+
+            // 2. Gambar Foto Personil (Lingkaran di sebelah kiri)
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(140, 225, 90, 0, Math.PI * 2, true);
+            ctx.closePath();
+            ctx.clip();
+            ctx.drawImage(img, 50, 135, 180, 180);
+            ctx.restore();
+
+            // Bingkai Lingkaran Foto
+            ctx.beginPath();
+            ctx.arc(140, 225, 90, 0, Math.PI * 2, true);
+            ctx.lineWidth = 6;
+            ctx.strokeStyle = "#FFD700";
+            ctx.stroke();
+
+            // 3. Tulis Teks Nama, Peran, & Deskripsi
+            ctx.fillStyle = "#0f172a";
+            ctx.font = "bold 32px 'Inter', sans-serif";
+            ctx.fillText(nama, 270, 165);
+
+            // Badge Peran
+            ctx.fillStyle = "#fef3c7";
+            ctx.beginPath();
+            ctx.roundRect(270, 190, ctx.measureText(peran).width + 24, 34, 17);
+            ctx.fill();
+
+            ctx.fillStyle = "#92400e";
+            ctx.font = "bold 16px 'Inter', sans-serif";
+            ctx.fillText(peran.toUpperCase(), 282, 213);
+
+            // Deskripsi (Multi-line text breaker sederhana)
+            ctx.fillStyle = "#64748b";
+            ctx.font = "18px 'Inter', sans-serif";
+            wrapText(ctx, desc, 270, 260, 480, 26);
+
+            // 4. WATERMARK SHOUTUL MASTEJA (Elegan di pojok kanan bawah)
+            ctx.fillStyle = "rgba(184, 155, 0, 0.25)";
+            ctx.font = "bold 22px 'Inter', sans-serif";
+            ctx.textAlign = "right";
+            ctx.fillText("SHOUTUL MASTEJA", canvas.width - 30, canvas.height - 25);
+
+            // 5. Ekspor Menjadi File Gambar & Bagikan (Share / Download)
+            canvas.toBlob(async function(blob) {
+                const file = new File([blob], `profil-${nama.replace(/\s+/g, '-').toLowerCase()}.png`, { type: "png" });
+                
+                // Gunakan Web Share API jika didukung perangkat (bisa langsung kirim ke WhatsApp, dll)
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    try {
+                        await navigator.share({
+                            title: `Profil ${nama}`,
+                            text: `Kenali ${nama} (${peran}) dari Shoutul Masteja!`,
+                            files: [file]
+                        });
+                    } catch (error) {
+                        console.log('Berbagi dibatalkan', error);
+                    }
+                } else {
+                    // Fallback jika browser tidak mendukung direct share: Download otomatis
+                    const link = document.createElement('a');
+                    link.download = `profil-${nama.replace(/\s+/g, '-').toLowerCase()}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                }
+            }, 'image/png');
+        };
+
+        img.onerror = function() {
+            // Jika foto gagal dimuat, gunakan logo default sebagai pengganti
+            img.src = 'logo-masteja.png';
+        };
+    }
+
+    // Fungsi Pembantu untuk merapikan teks panjang agar turun baris di dalam Canvas
+    function wrapText(context, text, x, y, maxWidth, lineHeight) {
+        const words = text.split(' ');
+        let line = '';
+        for(let n = 0; n < words.length; n++) {
+            const testLine = line + words[n] + ' ';
+            const metrics = context.measureText(testLine);
+            const testWidth = metrics.width;
+            if (testWidth > maxWidth && n > 0) {
+                context.fillText(line, x, y);
+                line = words[n] + ' ';
+                y += lineHeight;
+            } else {
+                line = testLine;
+            }
+        }
+        context.fillText(line, x, y);
     }
 
     // Fungsi Interaktif Modal Full Screen Foto
@@ -430,7 +660,6 @@
         });
     }
 
-    // Jalankan fungsi saat halaman dimuat
     loadProfiles();
 </script>
 
