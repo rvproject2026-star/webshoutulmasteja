@@ -329,7 +329,7 @@
             cursor: pointer;
         }
 
-        /* MODAL KHUSUS OPSI BERBAGI GAMBAR (PC & HP FRIENDLY) */
+        /* MODAL CADANGAN (UNTUK PC / BROWSER YANG TIDAK SUPPORT NATIVE SHARE) */
         #share-modal {
             display: none;
             position: fixed;
@@ -357,9 +357,15 @@
         }
 
         .share-modal-content h3 {
-            margin-bottom: 12px;
+            margin-bottom: 6px;
             font-size: 1.1rem;
             color: #0f172a;
+        }
+
+        .share-modal-content p {
+            font-size: 0.78rem;
+            color: #64748b;
+            margin-bottom: 14px;
         }
 
         .share-preview-container {
@@ -387,14 +393,14 @@
             background: #25D366;
             color: white;
             border: none;
-            padding: 10px 16px;
+            padding: 10px 14px;
             border-radius: 8px;
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             flex: 1;
             justify-content: center;
             text-decoration: none;
@@ -407,14 +413,14 @@
             background: #0f172a;
             color: white;
             border: none;
-            padding: 10px 16px;
+            padding: 10px 14px;
             border-radius: 8px;
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             flex: 1;
             justify-content: center;
             transition: 0.2s;
@@ -490,19 +496,20 @@
     <img id="modal-img" src="" alt="Full Screen Preview">
 </div>
 
-<!-- MODAL PREVIEW BERBAGI (UNTUK PC & HP) -->
+<!-- MODAL CADANGAN (KHUSUS PC/LAPTOP) -->
 <div id="share-modal">
     <div class="share-modal-content">
         <h3>Kartu Profil Siap Dibagikan!</h3>
+        <p>Unduh gambarnya, lalu bagikan ke WhatsApp.</p>
         <div class="share-preview-container">
             <img id="share-result-img" src="" alt="Preview Kartu Profil">
         </div>
         <div class="share-action-buttons">
-            <a id="whatsapp-share-btn" href="#" target="_blank" class="btn-wa">
-                <i class="fab fa-whatsapp"></i> Kirim WA
-            </a>
             <a id="download-img-btn" href="#" download="profil-masteja.png" class="btn-download">
-                <i class="fas fa-download"></i> Unduh
+                <i class="fas fa-download"></i> Unduh Gambar
+            </a>
+            <a id="whatsapp-share-btn" href="#" target="_blank" class="btn-wa">
+                <i class="fab fa-whatsapp"></i> Bagikan Tautan
             </a>
         </div>
         <button class="close-share-modal" onclick="closeShareModal()">Tutup</button>
@@ -578,48 +585,42 @@
         });
     });
 
-    // Proses Pembuatan Kartu & Sistem Berbagi Multi-Platform (HP & PC)
+    // Proses Buat Gambar Berwatermark dan Kirim Sekaligus (Native Share HP)
     function generateAndShareProfile(nama, peran, desc, fotoSrc) {
         const canvas = document.getElementById('share-canvas');
         const ctx = canvas.getContext('2d');
         
         const img = new Image();
-        // Atur crossOrigin agar aman dari pembatasan server hosting (CORS)
         img.crossOrigin = "anonymous";
         img.src = fotoSrc;
 
         img.onload = function() {
             renderCanvasContent(ctx, canvas, img, nama, peran, desc);
-            finalizeSharing(canvas, nama, peran);
+            executeSharing(canvas, nama, peran);
         };
 
         img.onerror = function() {
-            // Jika foto gagal dimuat di server, pakai logo cadangan
             const fallbackImg = new Image();
             fallbackImg.crossOrigin = "anonymous";
             fallbackImg.src = 'logo-masteja.png';
             fallbackImg.onload = function() {
                 renderCanvasContent(ctx, canvas, fallbackImg, nama, peran, desc);
-                finalizeSharing(canvas, nama, peran);
+                executeSharing(canvas, nama, peran);
             };
         };
     }
 
     function renderCanvasContent(ctx, canvas, img, nama, peran, desc) {
-        // Latar belakang putih kartu
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Bingkai luar tipis
         ctx.strokeStyle = "#e2e8f0";
         ctx.lineWidth = 4;
         ctx.strokeRect(0, 0, canvas.width, canvas.height);
 
-        // Aksen garis kuning kiri
         ctx.fillStyle = "#FFD700";
         ctx.fillRect(0, 0, 16, canvas.height);
 
-        // Foto Lingkaran
         ctx.save();
         ctx.beginPath();
         ctx.arc(140, 225, 90, 0, Math.PI * 2, true);
@@ -628,19 +629,16 @@
         ctx.drawImage(img, 50, 135, 180, 180);
         ctx.restore();
 
-        // Border Lingkaran Foto
         ctx.beginPath();
         ctx.arc(140, 225, 90, 0, Math.PI * 2, true);
         ctx.lineWidth = 6;
         ctx.strokeStyle = "#FFD700";
         ctx.stroke();
 
-        // Teks Nama
         ctx.fillStyle = "#0f172a";
         ctx.font = "bold 32px 'Inter', sans-serif";
         ctx.fillText(nama, 270, 165);
 
-        // Badge Peran
         ctx.fillStyle = "#fef3c7";
         ctx.beginPath();
         ctx.roundRect(270, 190, ctx.measureText(peran).width + 24, 34, 17);
@@ -650,57 +648,56 @@
         ctx.font = "bold 16px 'Inter', sans-serif";
         ctx.fillText(peran.toUpperCase(), 282, 213);
 
-        // Deskripsi
         ctx.fillStyle = "#64748b";
         ctx.font = "18px 'Inter', sans-serif";
         wrapText(ctx, desc, 270, 260, 480, 26);
 
-        // Watermark Shoutul Masteja
         ctx.fillStyle = "rgba(184, 155, 0, 0.3)";
         ctx.font = "bold 22px 'Inter', sans-serif";
         ctx.textAlign = "right";
         ctx.fillText("SHOUTUL MASTEJA", canvas.width - 30, canvas.height - 25);
-        ctx.textAlign = "left"; // reset
+        ctx.textAlign = "left";
     }
 
-    function finalizeSharing(canvas, nama, peran) {
-        const dataUrl = canvas.toDataURL('image/png');
-        
-        // Deteksi apakah perangkat mendukung Web Share API File (Biasanya HP Android/iOS)
+    async function executeSharing(canvas, nama, peran) {
+        const currentUrl = window.location.href;
+        const shareText = `✨ *PROFIL PERSONIL SHOUTUL MASTEJA* ✨\n\nKenalan yuk dengan:\n👤 *${nama}* (${peran})\n\nKunjungi website resmi kami:\n🔗 ${currentUrl}\n\nShollu 'alan Nabi Muhammad! 🤲🎤`;
+
         canvas.toBlob(async function(blob) {
-            const file = new File([blob], `profil-${nama.replace(/\s+/g, '-').toLowerCase()}.png`, { type: "png" });
+            const file = new File([blob], `profil-${nama.replace(/\s+/g, '-').toLowerCase()}.png`, { type: "image/png" });
             
+            // Cek apakah HP mendukung fitur berbagi file gambar + teks sekaligus
             if (navigator.canShare && navigator.canShare({ files: [file] })) {
                 try {
                     await navigator.share({
-                        title: `Profil ${nama}`,
-                        text: `Kenali ${nama} (${peran}) dari Shoutul Masteja! Shollu 'alan Nabi Muhammad.`,
+                        title: `Profil ${nama} - Shoutul Masteja`,
+                        text: shareText,
                         files: [file]
                     });
-                    return; // Berhasil dibagikan lewat menu HP native
+                    return; // Berhasil membuka menu share bawaan HP (WhatsApp, Facebook, dll dengan gambar & teks lengkap)
                 } catch (err) {
-                    console.log('Share dibatalkan atau dialihkan ke modal web');
+                    console.log('Berbagi dibatalkan pengguna');
+                    return;
                 }
             }
 
-            // Jika di PC/Laptop atau browser tidak mendukung file share, tampilkan Modal Interaktif
-            showShareModal(dataUrl, nama, peran);
+            // Fallback untuk PC / browser yang tidak mendukung file share: buka modal preview
+            showShareModal(canvas, nama, peran, shareText);
         }, 'image/png');
     }
 
-    function showShareModal(dataUrl, nama, peran) {
+    function showShareModal(canvas, nama, peran, shareText) {
         const modal = document.getElementById('share-modal');
         const resultImg = document.getElementById('share-result-img');
         const downloadBtn = document.getElementById('download-img-btn');
         const waBtn = document.getElementById('whatsapp-share-btn');
 
+        const dataUrl = canvas.toDataURL('image/png');
         resultImg.src = dataUrl;
         downloadBtn.href = dataUrl;
         downloadBtn.download = `profil-${nama.replace(/\s+/g, '-').toLowerCase()}.png`;
 
-        // Link Share WhatsApp Web / Desktop
-        const textMessage = encodeURIComponent(`Halo! Kenalan yuk dengan ${nama} (${peran}) dari Shoutul Masteja. Shollu 'alan Nabi Muhammad! 🎤✨\n\n(Simpan gambar kartu profil ini ya!)`);
-        waBtn.href = `https://api.whatsapp.com/send?text=${textMessage}`;
+        waBtn.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
 
         modal.style.display = 'flex';
     }
